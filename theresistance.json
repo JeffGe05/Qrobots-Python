@@ -8,9 +8,10 @@
     "GAME_START": "游戏开始！",
     "THIS_ROUND_STARTUP": "这一轮的任务首领是{player.name}。\n请在讨论后选择{missionplayernum}名玩家执行第{gameround}次任务。",
     "LEADER_CHOOSE_PLAYER": "请回复玩家前的数字选择执行任务的玩家：\n{}",
-    "VOTE_LEADER_CHOOSE_PLAYER": "首领选择指派以下玩家执行任务，请投票选择是否通过：\n{}",
+    "VOTE_LEADER_CHOOSE_PLAYER": "首领选择指派以下玩家执行任务，请投票选择是否通过：\n{missionplayers}\n这是此项任务的第{votecount}次投票。",
     "INVALID_MESSAGE": "没看懂你在说啥……",
     "DUPLICATED_NUMBERS": "请不要选择重复的玩家。",
+    "COMMAND_RECEIVED": "收到！",
     "VOTE_AGREE": [
         ".y",
         "同意",
@@ -19,12 +20,26 @@
     ],
     "VOTE_DISAGREE": [
         ".n",
-        "不同意",
-        "不通过",
-        "不是",
+        "不",
         "否"
     ],
     "VOTE_BEGIN": "请回复是否通过这一轮的投票。",
     "VOTE_NOT_PASSED": "这一轮投票未被通过，请继续讨论并由下一位首领选择执行任务的玩家。",
-    "VOTE_PASSED": "投票通过！"
+    "VOTE_PASSED": "投票通过！请以上玩家准备执行任务……",
+    "MISSION_VOTE_1": "准备执行第{gameround}次任务，请回复是否配合此次任务执行，注意只要有一位玩家不配合，此次任务就失败。",
+    "MISSION_VOTE_2": "准备执行第{gameround}次任务，请回复是否配合此次任务执行，注意本任务两位玩家不配合才视为失败。",
+    "MISSION_COOP": [
+        ".y",
+        "配合",
+        "是"
+    ],
+    "MISSION_NOT_COOP": [
+        ".n",
+        "不",
+        "否"
+    ],
+    "MISSION_SUCCESS": "任务成功完成！",
+    "MISSION_SUCCESS_WITH_1_NOTCOOP": "虽然有一票不配合，但是任务仍然成功完成！",
+    "MISSION_FAIL": "任务失败，有{notcoop}位玩家选择了不配合。",
+    "GAME_END": "游戏结束，{winners}阵营胜利！"
 }

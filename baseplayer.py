@@ -40,6 +40,7 @@ class BaseCampaign:
         self.acceptedplayers = ()
         self.commands = dict()
         self.commandparsers = dict()
+        self.gameended = False
 
     def addplayer(self, sender):
         raise NotImplementedError
@@ -76,11 +77,21 @@ class BaseCampaign:
         try:
             return next(self._game)
         except StopIteration:
-            print("游戏结束")  # TODO
+            self.gameended = True
             return None
 
     def addprivatemsg(self, player, msg):
-        self.messages.append(({"user_id": player.user_id}, msg))
+        if isinstance(player, int):
+            user_id = player
+        elif isinstance(player, BasePlayer):
+            user_id = player.user_id
+        else:
+            raise ValueError
+
+        # Debug: 添加玩家QQ号在消息前
+        # msg = f"[{user_id}] {msg}"
+
+        self.messages.append(({"user_id": user_id}, msg))
 
     def addprivatemsgforall(self, msg):
         for p in self.players:
@@ -107,9 +118,9 @@ class BaseCampaign:
             # acceptedplayers = acceptedplayers
             pass
         else:
-            raise NotImplementedError
+            raise ValueError
 
-        self.acceptedplayers = (p.user_id for p in acceptedplayers)  # 转换为QQ号(int)
+        self.acceptedplayers = tuple(p.user_id for p in acceptedplayers)  # 转换为QQ号(int)
         acceptedplayers = None  # Debug: 防止下面代码误用
 
         self.commands = dict.fromkeys(self.acceptedplayers, None)  # 清空指令缓存
@@ -123,7 +134,7 @@ class BaseCampaign:
                 raise ValueError
             self.commandparsers = dict(zip(self.acceptedplayers, commandparsers))
         else:
-            raise NotImplementedError
+            raise ValueError
 
     def handlemessage(self, context):
         raise NotImplementedError
@@ -141,5 +152,12 @@ class BaseCampaign:
         if isinstance(player_ids, int):
             return self.getplayerbyid(player_ids).string
 
-        player_ids = list(player_ids).sort()
-        return "\n".join((self.getplayerbyid(player_id) for player_id in player_ids))
+        player_ids = list(player_ids)
+        player_ids.sort()
+        return "\n".join(
+            (self.getplayerbyid(player_id).string for player_id in player_ids)
+        )
+
+    def __contains__(self, user_id):
+        """判断QQ号是否是本局游戏的玩家。"""
+        return user_id in (p.user_id for p in self.players)

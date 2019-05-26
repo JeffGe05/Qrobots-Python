@@ -16,11 +16,12 @@ def getnumberparser(include=None, exclude=None, commandnumber=1, maxnum=None):
     """
     if include is None:
         include = set(range(1, maxnum + 1))
+    if exclude is None:
+        exclude = set()
     # if exclude is not None:
     #     include -= set(exclude)
 
     def commandparser(message: str):
-        message = message.strip(" ,")
         pattern = (
             r"^[^\d]*"
             + r"[,.\s\u3000\u3001\u3002\uFF0C\uFF1B\u548C]".join(
