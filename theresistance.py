@@ -6,14 +6,14 @@ from baseplayer import BaseCampaign, BasePlayer
 from commandparser import getnumberparser, getboolparser, ErrorString
 
 with open("theresistance.json", encoding="utf8") as f:
-    texts = json.load(f)
+    TEXT = json.load(f)
 
 
 class TheResistancePlayer(BasePlayer):
     pass
 
 
-TheResistancePlayer.ROLE.update({"blue": "抵抗组织", "red": "政府卧底"})
+TheResistancePlayer.updaterolenames(TEXT["ROLENAMES"])
 
 
 class TheResistanceCampaign(BaseCampaign):
@@ -57,13 +57,12 @@ class TheResistanceCampaign(BaseCampaign):
         """游戏流程"""
         self.assignroles()  # 分发身份
         for p in self.players:  # 告诉玩家自己的身份
-            self.addprivatemsg(
-                p, texts["ROLE_NOTIFICATION"].format(rolename=p.rolename)
-            )
-        msg = texts["RED_PLAYER_NOTIFICATION"] + "\n".join(self.redplayername)
+            self.addprivatemsg(p, TEXT["ROLE_NOTIFICATION"].format(rolename=p.rolename))
+
+        msg = TEXT["RED_PLAYER_NOTIFICATION"] + "\n".join(self.redplayername)
         for p in self.redplayers:  # 告诉卧底玩家其它卧底身份
             self.addprivatemsg(p, msg)
-        self.addgroupmsg(texts["GAME_START"])
+        self.addgroupmsg(TEXT["GAME_START"])
         leadergen = cycle(self.players)
         for _ in range(random.randint(0, self.playernum - 1)):  # 随机初始首领玩家
             next(leadergen)
@@ -73,11 +72,14 @@ class TheResistanceCampaign(BaseCampaign):
         missionrequire = self.MissionRequire[self.playernum]  # 任务所需玩家数量
         for leader in leadergen:  # 无限循环，用 break 跳出
             self.addgroupmsg(
-                texts["THIS_ROUND_STARTUP"].format(
+                TEXT["THIS_ROUND_STARTUP"].format(
                     player=leader,
                     gameround=gameround,
                     missionplayernum=missionrequire[gameround - 1],
                 )
+            )
+            self.addprivatemsg(
+                leader, TEXT["LEADER_CHOOSE_PLAYER"].format(self.allplayerstring)
             )
             self.acceptcommandfrom(
                 (leader,),
@@ -86,25 +88,41 @@ class TheResistanceCampaign(BaseCampaign):
                 ),
             )
             yield self.yieldmessages()
+
             self.addgroupmsg(
-                texts["LEADER_CHOOSE_PLAYER"].format("、".join(self.commands[leader]))
+                TEXT["VOTE_LEADER_CHOOSE_PLAYER"].format(
+                    self.getplayerbyid(self.commands[leader])
+                )
             )
+            self.addprivatemsgforall(TEXT["VOTE_BEGIN"])
             self.acceptcommandfrom(
-                "all", getboolparser(yes=texts["VOTE_AGREE"], no=texts["VOTE_DISAGREE"])
+                "all", getboolparser(yes=TEXT["VOTE_AGREE"], no=TEXT["VOTE_DISAGREE"])
             )
             yield self.yieldmessages()
+
+            voteyescount = sum(self.commands.values())  # 通过的玩家数
+            if voteyescount <= self.playernum / 2:  # 如果一半及以上的玩家否决了本回合首领任命的人选
+                self.addgroupmsg(TEXT["VOTE_NOT_PASSED"])
+                continue
+
+            self.addgroupmsg(TEXT["VOTE_PASSED"])
+
             # TODO: 游戏流程
 
     def handlemessage(self, context):
         player = context["user_id"]
         if player not in self.acceptedplayers:
             return None
+
         cmd = self.commandparsers[player](context["message"])
         if isinstance(cmd, ErrorString):
-            return {"reply": texts[cmd]}  # TODO
+            return {"reply": TEXT[cmd]}
         else:
             self.commands[player] = cmd
-        if all((cmd is not None for cmd in self.commands.values())):  # 收到所有指令
+
+        # TODO: 回复指令已收到
+
+        if self.allplayerset:  # 收到所有指令
             return self.resume()
         else:
             return None
@@ -127,12 +145,4 @@ class TheResistanceCampaign(BaseCampaign):
 
 
 if __name__ == "__main__":
-    missionrequire = TheResistanceCampaign.MissionRequire[6]
-    gameround = 1
-    print(
-        texts["THIS_ROUND_STARTUP"].format(
-            player=TheResistancePlayer({"nickname": "六号玩家", "user_id": 498533576}),
-            gameround=gameround,
-            missionplayernum=missionrequire[gameround - 1],
-        )
-    )
+    pass

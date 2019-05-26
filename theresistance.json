@@ -1,9 +1,14 @@
 {
+    "ROLENAMES": {
+        "blue": "抵抗组织",
+        "red": "政府卧底"
+    },
     "ROLE_NOTIFICATION": "您的身份是【{rolename}】。",
     "RED_PLAYER_NOTIFICATION": "政府卧底的玩家分别是：\n",
     "GAME_START": "游戏开始！",
     "THIS_ROUND_STARTUP": "这一轮的任务首领是{player.name}。\n请在讨论后选择{missionplayernum}名玩家执行第{gameround}次任务。",
-    "LEADER_CHOOSE_PLAYER": "首领选择指派{}号玩家执行任务，请投票选择是否通过。",
+    "LEADER_CHOOSE_PLAYER": "请回复玩家前的数字选择执行任务的玩家：\n{}",
+    "VOTE_LEADER_CHOOSE_PLAYER": "首领选择指派以下玩家执行任务，请投票选择是否通过：\n{}",
     "INVALID_MESSAGE": "没看懂你在说啥……",
     "DUPLICATED_NUMBERS": "请不要选择重复的玩家。",
     "VOTE_AGREE": [
@@ -18,5 +23,8 @@
         "不通过",
         "不是",
         "否"
-    ]
+    ],
+    "VOTE_BEGIN": "请回复是否通过这一轮的投票。",
+    "VOTE_NOT_PASSED": "这一轮投票未被通过，请继续讨论并由下一位首领选择执行任务的玩家。",
+    "VOTE_PASSED": "投票通过！"
 }

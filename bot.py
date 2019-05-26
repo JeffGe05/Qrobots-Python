@@ -1,7 +1,3 @@
-import asyncio
-import threading
-from time import sleep
-
 from aiocqhttp import CQHttp
 
 from theresistance import TheResistanceCampaign
@@ -18,6 +14,8 @@ async def handle_msg(context):
 
 
 def test_setup():
+    from time import sleep
+
     campaign = TheResistanceCampaign(719231968)
     campaign.addplayer({"nickname": "一号玩家", "user_id": 498533576})
     campaign.addplayer({"nickname": "二号玩家", "user_id": 498533576})
@@ -27,14 +25,20 @@ def test_setup():
     campaign.addplayer({"nickname": "六号玩家", "user_id": 498533576})
     sendmessages(campaign.resume())
 
+    sleep(5)
+
 
 def sendmessages(messages):
+    import threading
+
     print(messages)
     for context, message in messages:
         threading.Thread(target=sendmessage, args=(context, message)).start()
 
 
 def sendmessage(context, message):
+    import asyncio
+
     print()
     print(context)
     print(message)
@@ -42,6 +46,8 @@ def sendmessage(context, message):
 
 
 if __name__ == "__main__":
+    import threading
+
     try:
         threading.Timer(5, test_setup).start()
         bot.run(host="127.0.0.1", port=8090)
